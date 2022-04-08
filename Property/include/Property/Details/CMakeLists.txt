@@ -1,6 +1,6 @@
 file(GLOB FILES {FILES} "*.hpp")
-set(SUBPATH ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-set(SUBDIRECTORIES "Details")
+set(SUBPATH ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/Details)
+set(SUBDIRECTORIES "")
 #Add all subdirectories 
 foreach(VAR ${SUBDIRECTORIES})
 	add_subdirectory(${VAR})

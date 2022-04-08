@@ -12,7 +12,7 @@
 
 namespace Property
 {
-
+extern const std::string version;
 namespace details
 {
 template <typename ConverterType>

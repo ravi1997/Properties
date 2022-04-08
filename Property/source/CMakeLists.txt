@@ -11,5 +11,5 @@ if(FILES)
 	target_sources("${PROJECT_NAME}" PRIVATE ${FILES})
 	
 	#Install our source files
-	install(FILES ${FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME})
+	install(FILES ${FILES} DESTINATION ${CMAKE_INSTALL_SOURCEDIR}/${PROJECT_NAME})
 endif()

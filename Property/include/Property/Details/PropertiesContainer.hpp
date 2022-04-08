@@ -1,8 +1,8 @@
 #ifndef __PROPERTIESCONTAINER_H__
 #define __PROPERTIESCONTAINER_H__
 
-#include "Property/PropertyContainer.hpp"
-#include <Property/Property.hpp>
+#include "Property/Details/PropertyContainer.hpp"
+#include <Property/Details/Property.hpp>
 
 namespace Property
 {
@@ -30,7 +30,7 @@ public:
 
   template <typename t>
   typename t::PropertyType::PropertyType
-  operator[] (t property)
+  operator[] (t property) const
   {
     return t::PropertyType::deserialize (table[property.getName ()]);
   }
@@ -40,6 +40,7 @@ public:
   {
     return table[s];
   }
+
 
   void
   operator() (details::PropertyContainer<ConverterType> pc)

@@ -4,7 +4,10 @@
 #include<Property/Property.hpp>
 
 
-namespace Property{}
+namespace Property{
+    const std::string version = "1.0.1";
+
+}
 
 
 

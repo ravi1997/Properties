@@ -1,7 +1,7 @@
 #ifndef __PROPERTYCONTAINER_H__
 #define __PROPERTYCONTAINER_H__
 
-#include <Property/PropertyHelperType.hpp>
+#include <Property/Details/PropertyHelperType.hpp>
 
 namespace Property
 {
