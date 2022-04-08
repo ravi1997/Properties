@@ -20,7 +20,7 @@ public:
 
     auto setProperty = [&] (auto property) {
       auto key = property.getName ();
-      auto value = property.getDefaultValue ();
+      auto value = decltype(property)::PropertyType::serialize (property.getDefaultValue ());
 
       table[key] = value;
     };
@@ -30,7 +30,7 @@ public:
 
   template <typename t>
   typename t::PropertyType::PropertyType
-  operator[] (t property) const
+  operator[] (t property)
   {
     return t::PropertyType::deserialize (table[property.getName ()]);
   }

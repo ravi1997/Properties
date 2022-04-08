@@ -8,6 +8,35 @@ namespace Property
 {
 template <typename t, typename c = std::string> class Property
 {
+
+public:
+  using PropertyType = details::UserDefinedHelperType<t,c>;
+
+private:
+  std::string name;
+  typename PropertyType::PropertyType defaultValue;
+
+public:
+  Property (std::string s, typename PropertyType::PropertyType dv)
+      : name{ s }, defaultValue{ dv }
+  {
+  }
+
+  details::PropertyContainer<c>
+  operator= (typename PropertyType::PropertyType value)
+  {
+    return { name, PropertyType::serialize (value) };
+  }
+  auto
+  getDefaultValue () const
+  {
+    return defaultValue;
+  }
+  auto
+  getName () const
+  {
+    return name;
+  }
 };
 
 template <typename c> class Property<std::string, c>

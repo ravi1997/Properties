@@ -73,6 +73,9 @@ namespace Property {
               return "int";
             else if (std::is_same_v<float,typename std::remove_cv<t>>)
               return "float";
+            else if (std::is_same_v<unsigned int,typename std::remove_cv<t>>)
+              return "unsigned int";
+            
             else
               return "double";
           }
@@ -96,8 +99,8 @@ namespace Property {
           }
         };
 
-        template<typename t,typename c>
-        class UserDefinedPropertyHelperType{
+        template <typename t, typename c> class UserDefinedHelperType
+        {
         public:
           using ConverterType = c;
           using PropertyType = t;
