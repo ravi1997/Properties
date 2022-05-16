@@ -20,7 +20,7 @@ option(BUILD_SHARED_LIBS "True when building a shared library" True)
 
 project(Property VERSION 1.0.1)
 
-add_compile_options(-Wall -Wextra -std=c++2a )
+add_compile_options(-Wall -Wextra -std=c++2a -ggdb)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 

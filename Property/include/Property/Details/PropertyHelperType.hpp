@@ -6,10 +6,9 @@
 namespace Property {
     namespace details {
 
-        template<typename c>
         struct StringPropertyHelperType{
 
-            using ConverterType = c;
+            using ConverterType = std::string;
             using PropertyType = std::string;
             
             static std::string getPropertyName(){
@@ -17,23 +16,16 @@ namespace Property {
             }
 
             static PropertyType deserialize(ConverterType s){
-                if constexpr (std::is_same_v<ConverterType,std::string>)
-                    return s;
-                else
-                    return details::convert_to<PropertyType>(s);
+              return s;
             }
 
             static ConverterType serialize(PropertyType v){
-                if constexpr (std::is_same_v<ConverterType,std::string>)
-                    return v;
-                else
-                    return details::convert_to<ConverterType>(v);
+                return v;
             }
         };
 
-        template<typename c>
         struct BooleanPropertyHelperType{
-          using ConverterType = c;
+          using ConverterType = std::string;
           using PropertyType = bool;
 
           static std::string
@@ -45,25 +37,19 @@ namespace Property {
           static PropertyType
           deserialize (ConverterType s)
           {
-            if constexpr (std::is_same_v<ConverterType, std::string>)
-              return s == "TRUE";
-            else
-              return details::convert_to<PropertyType> (s);
+            return s == "TRUE";
           }
 
           static ConverterType
           serialize (PropertyType v)
           {
-            if constexpr (std::is_same_v<ConverterType, std::string>)
-              return (v)?"TRUE":"FALSE";
-            else
-              return details::convert_to<ConverterType> (v);
+            return (v)?"TRUE":"FALSE";
           }
         };
 
-        template<number t,typename c>
+        template<number t>
         struct NumberPropertyHelperType{
-          using ConverterType = c;
+          using ConverterType = std::string;
           using PropertyType = t;
 
           static std::string
@@ -83,26 +69,20 @@ namespace Property {
           static PropertyType
           deserialize (ConverterType s)
           {
-            if constexpr (std::is_same_v<ConverterType, std::string>)
-              return toNumber<PropertyType>(s);
-            else
-              return details::convert_to<PropertyType> (s);
+            return toNumber<PropertyType>(s);
           }
 
           static ConverterType
           serialize (PropertyType v)
           {
-            if constexpr (std::is_same_v<ConverterType, std::string>)
-              return std::to_string(v);
-            else
-              return details::convert_to<ConverterType> (v);
+            return std::to_string(v);
           }
         };
 
-        template <typename t, typename c> class UserDefinedHelperType
+        template <typename t> class UserDefinedHelperType
         {
         public:
-          using ConverterType = c;
+          using ConverterType = std::string;
           using PropertyType = t;
 
           static PropertyType
@@ -115,6 +95,46 @@ namespace Property {
           serialize (PropertyType v)
           {
               return details::convert_to<ConverterType> (v);
+          }
+        };
+
+        template <typename t> class VectorPropertyHelperType
+        {
+        public:
+          using ConverterType = std::string;
+          using PropertyType = std::vector<t>;
+
+          static PropertyType
+          deserialize (ConverterType s)
+          {
+            using namespace std;
+            auto split = [] (string s, string delimiter) {
+              size_t pos_start = 0, pos_end, delim_len = delimiter.length ();
+              string token;
+              vector<string> res;
+
+              while ((pos_end = s.find (delimiter, pos_start)) != string::npos)
+                {
+                  token = s.substr (pos_start, pos_end - pos_start);
+                  pos_start = pos_end + delim_len;
+                  res.push_back (token);
+                }
+
+              res.push_back (s.substr (pos_start));
+              return res;
+            };
+            PropertyType result;
+            s = s.substr(1,s.length()-2);
+            for(auto e:split(s,","))
+              result.push_back(details::convert_to<t>(e));
+            std::cout<<"Result size : "<<result.size()<<endl;
+            return  result;
+          }
+
+          static ConverterType
+          serialize (PropertyType v)
+          {
+            return details::convert_to<ConverterType> (v);
           }
         };
     }

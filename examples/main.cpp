@@ -4,14 +4,13 @@
 
 Property::Property<bool> visible{ "visible", false };
 Property::Property<int> level{ "level", 0 };
-
 class Button
 {
 private:
-  Property::PropertiesContainer<std::string> properties{ visible, level };
+  Property::PropertiesContainer properties{ visible, level };
 
   void
-  setProperty (Property::details::PropertyContainer<std::string> pc)
+  setProperty (Property::details::PropertyContainer pc)
   {
     properties (pc);
   }
@@ -32,14 +31,25 @@ public:
     else
       std::cout << "Visible : False" << std::endl;
   }
+
+  auto getVisible()const{
+    return properties[visible];
+  }
+
+
 };
 
 int
 main ()
 {
-
+try{
   Button b{ visible = false };
 
   b.draw ();
+
+}catch(const char* s)
+{
+  std::cout<<s<<std::endl;
+}
   return 0;
 }

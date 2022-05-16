@@ -10,13 +10,40 @@
 #include <string_view>
 #include <vector>
 
+namespace std{
+  template<typename t>
+concept toStringInvocable = requires(t a){
+  {to_string(a)} -> same_as<string>;
+};
+
+  template<typename t>
+  string to_string(vector<t> c){
+    string result = "{";
+    for(auto e:c){
+      string se = "";
+      if constexpr (is_same_v < t,string>)
+        se = e;
+      else if constexpr (toStringInvocable<t>)
+        se = to_string(e);
+      else
+        se = e.getString();
+      result +=(se + ",");
+    }
+    if (c.size()>1)
+      result = result.substr(0,result.length()-1);
+    result +=  "}";
+
+    return result;
+  }
+}
+
 namespace Property
 {
 extern const std::string version;
 namespace details
 {
 
-template<typename t>
+  template<typename t>
 concept toStringInvocable = requires(t a){
   {std::to_string(a)} -> std::same_as<std::string>;
 };
@@ -30,10 +57,10 @@ convert_to (auto value)
   else if constexpr (std::is_same_v<ConverterType, std::string> && toStringInvocable<decltype(value)>)
     return std::to_string (value);
   else if constexpr (std::is_same_v<ConverterType, std::string> && ! toStringInvocable<decltype(value)>)
-    return value.getString();
+       return value.getString ();
   else if constexpr (std::is_same_v<decltype(value), std::string>)
     return ConverterType::get(value);
-    else
+  else
     {
       using myType = decltype (value);
       using c = ConverterType;

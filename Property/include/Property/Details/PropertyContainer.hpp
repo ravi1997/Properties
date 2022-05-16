@@ -7,10 +7,10 @@ namespace Property
 {
 namespace details
 {
-template <typename c = std::string> class PropertyContainer
+class PropertyContainer
 {
 public:
-  using ConversionType = c;
+  using ConversionType = std::string;
 
 private:
   std::string propertyName;
