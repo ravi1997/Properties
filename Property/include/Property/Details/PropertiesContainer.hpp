@@ -3,76 +3,48 @@
 
 #include <Property/Details/Property.hpp>
 #include <Property/Details/PropertyContainer.hpp>
-#include <type_traits>
 
-namespace Property
-{
-
-template <class, template <class...> class>
-inline constexpr bool is_specialization = false;
-template <template <class...> class T, class... Args>
-inline constexpr bool is_specialization<T<Args...>, T> = true;
-
-template <class T> concept isProperty = is_specialization<T, Property>;
-
-class PropertiesContainer
+namespace Property{
+template <typename... Properties> class PropertiesContainer
 {
 private:
-  std::map<std::string, std::string> table;
+    std::tuple<std::pair<Properties,std::string_view>...> properties;
+    //std::map<std::string, std::string> table;
+
 public:
-  void setProperty (isProperty auto property)
-  {
-    auto key = property.getName ();
-    std::cout<<"Properties-Property Name : "<<key<<std::endl;
-    auto value = decltype (property)::PropertyType::serialize (
-        property.getDefaultValue ());
-
-    table[key] = value;
-  }
-
-  using ConverterType = std::string;
-
-  template <isProperty... t> PropertiesContainer (t... properties)
-  {
-    (setProperty (properties), ...);
-  }
-
-  template <isProperty t>
-  typename t::PropertyType::PropertyType
-  operator[] (t property)
-  {
-    return t::PropertyType::deserialize (table[property.getName ()]);
-  }
-
-  template <typename t>
-  typename t::PropertyType::PropertyType
-  operator[] (t property) const
-  {
-    std::cout<<"Property Name : "<<property.getName()<<std::endl;
-    return t::PropertyType::deserialize (table.at(property.getName ()));
-  }
-
-  auto &
-  operator[] (std::string s)
-  {
-    return table[s];
-  }
+  PropertiesContainer (Properties... ps):properties{{ps,ps.getDefaultValue()}...}
+  {}
 
   auto
-  operator[] (std::string s) const
-  {
-    return table.at(s);
+  operator() (Details::PropertyContainer const& pc){
+    for_each (properties, [&] (auto &item) {
+      auto [property, value] = item;
+      if (property.getName() == pc.getName())
+        item.second = pc.getValue();
+      else
+        return;
+    });
   }
 
-  void
-  operator() (details::PropertyContainer pc)
-  {
-    if(auto iter = table.find(pc.getName());iter==table.end())
-      throw "Not A Property of this Module";
-    table[pc.getName ()] = pc.getValue ();
+  template<typename t>
+  auto
+  operator[] (const Property<t>& pc)const{
+    std::string_view sv;
+    for_each (properties, [&] (auto &item) {
+      auto [property, value] = item;
+      if (property.getName () == pc.getName ())
+        sv = item.second;
+      else
+        return;
+    });
+    return Property<t>::PropertyType::deserialize(sv);
   }
 };
-
 }
+
+#define PROPERTY(...)                                                                \
+  Property::PropertiesContainer<FOR_EACH (dT, __VA_ARGS__) EMPTY> property{             \
+    __VA_ARGS__, EMPTY{}                                             \
+  };
 
 #endif // __PROPERTIESCONTAINER_H__

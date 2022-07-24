@@ -1,22 +1,25 @@
-#include <Property/Property.hpp>
+#include <Property/Property.hpp>           
 #include <iostream>
 #include <string>
+constexpr Property::Property<bool> visible{ "visible", "false" };
+constexpr Property::Property<int> level{ "level", "0" };
 
-Property::Property<bool> visible{ "visible", false };
-Property::Property<int> level{ "level", 0 };
+
+
 class Button
 {
 private:
-  Property::PropertiesContainer properties{ visible, level };
+  PROPERTY(visible, level)
 
   void
-  setProperty (Property::details::PropertyContainer pc)
+  setProperty (Property::Details::PropertyContainer pc)
   {
-    properties (pc);
+    property (pc);
   }
 
 public:
-  template <typename... t> Button (t... properties)
+  template <typename... t> 
+  constexpr Button (t... properties)
   {
     (setProperty (properties), ...);
   }
@@ -24,7 +27,7 @@ public:
   void
   draw ()
   {
-    bool myvisible = properties[visible];
+    bool myvisible = property[visible];
 
     if (myvisible)
       std::cout << "Visible : True" << std::endl;
@@ -33,7 +36,7 @@ public:
   }
 
   auto getVisible()const{
-    return properties[visible];
+    return property[visible];
   }
 
 
@@ -42,6 +45,8 @@ public:
 int
 main ()
 {
+
+  
 try{
   Button b{ visible = false };
 

@@ -1,52 +1,55 @@
 #ifndef __PROPERTYCONTAINER_H__
 #define __PROPERTYCONTAINER_H__
 
-#include <Property/Details/PropertyHelperType.hpp>
+#include <Property/types.hpp>
 
-namespace Property
-{
-namespace details
+namespace Property::Details
 {
 class PropertyContainer
 {
 public:
-  using ConversionType = std::string;
+  using ConverterType = std::string_view;
 
 private:
-  std::string propertyName;
-  ConversionType value;
+  std::string_view propertyType;
+  std::string_view name;
+  ConverterType value;
 
 public:
-  PropertyContainer (std::string s, ConversionType ct)
-      : propertyName{ s }, value{ ct }
+  constexpr
+  PropertyContainer (std::string_view p, std::string_view n, ConverterType v)
+      : propertyType{ p }, name{ n }, value{ v }
   {
   }
 
-  auto
-  getName ()
-  {
-    return propertyName;
-  }
-
-  auto
+  constexpr auto
   getName () const
   {
-    return propertyName;
+    return name;
   }
-
-  auto
-  getValue ()
-  {
-    return value;
-  }
-
-  auto
+  constexpr auto
   getValue () const
   {
     return value;
   }
+
+  constexpr auto
+  getPropertyType () const
+  {
+    return propertyType;
+  }
+
+  constexpr bool
+  operator== (PropertyContainer const& p) const
+  {
+    return getPropertyType () == p.getPropertyType ()
+           && getName () == p.getName () && value == p.getValue ();
+  }
+
+  constexpr void setValue(std::string_view v){
+    value = v;
+  }
 };
-}
 }
 
 #endif // __PROPERTYCONTAINER_H__

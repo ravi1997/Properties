@@ -1,179 +1,55 @@
 #ifndef __PROPERTY_DETAILS_H__
 #define __PROPERTY_DETAILS_H__
 
-#include <Property/Details/PropertyHelperType.hpp>
 #include <Property/Details/PropertyContainer.hpp>
+#include <Property/Details/PropertyHelper.hpp>
+#include <Property/types.hpp>
 
 namespace Property
 {
-template <typename t> class Property
-{
 
+template <typename t, typename h = Details::HelperType<t> > class Property
+{
 public:
-  using PropertyType = details::UserDefinedHelperType<t>;
+  using PropertyType = h;
+  using ConverterType = typename PropertyType::ConverterType;
 
 private:
-  std::string name;
-  typename PropertyType::PropertyType defaultValue;
+  const std::string_view name;
+  ConverterType defaultValue;
 
 public:
-  Property (std::string s, typename PropertyType::PropertyType dv)
-      : name{ s }, defaultValue{ dv }
+  constexpr
+  Property (const std::string_view n, ConverterType v)
+      : name{ n }, defaultValue{ v }
   {
   }
 
-  details::PropertyContainer
-  operator= (typename PropertyType::PropertyType property) const
-  {
-    auto value = PropertyType::serialize (property);
-    return {
-      name,
-      value
-    };
-  }
-  auto
-  getDefaultValue () const
-  {
-    return defaultValue;
-  }
-  auto
+  constexpr auto
   getName () const
   {
     return name;
   }
-};
 
-template<>
-class Property<std::string>
-{
-public:
-  using PropertyType = details::StringPropertyHelperType;
-
-private:
-  std::string name;
-  typename PropertyType::PropertyType defaultValue;
-
-public:
-  Property (std::string s, typename PropertyType::PropertyType dv)
-      : name{ s }, defaultValue{ dv }
-  {
-  }
-
-  details::PropertyContainer
-  operator= (typename PropertyType::PropertyType value)const
-  {
-    return { name, PropertyType::serialize (value) };
-  }
-  auto
-  getDefaultValue () const
-  {
-    return defaultValue;
-  }
-  auto
-  getName () const
-  {
-    return name;
-  }
-};
-
-template <> class Property<bool>
-{
-public:
-  using PropertyType = details::BooleanPropertyHelperType;
-
-private:
-  std::string name;
-  typename PropertyType::PropertyType defaultValue;
-
-public:
-  Property (std::string s, typename PropertyType::PropertyType dv)
-      : name{ s }, defaultValue{ dv }
-  {}
-
-  details::PropertyContainer
-  operator= (typename PropertyType::PropertyType value)const
-  {
-    return { name, PropertyType::serialize (value) };
-  }
-  auto
-  getDefaultValue () const
-  {
-    return defaultValue;
-  }
-  auto
-  getName () const
-  {
-    return name;
-  }
-};
-
-template<typename t>class Property<std::vector<t>>{
-  public:
-  using PropertyType = details::VectorPropertyHelperType<t>;
-
-private:
-  std::string name;
-  typename PropertyType::PropertyType defaultValue;
-
-public:
-  Property (std::string s, typename PropertyType::PropertyType dv)
-      : name{ s }, defaultValue{ dv }
-  {
-  }
-
-  details::PropertyContainer
-  operator= (typename PropertyType::PropertyType property)const
-  {
-    auto value = PropertyType::serialize (property);
-    return { name, value };
-  }
-
-  auto
+  constexpr auto
   getDefaultValue () const
   {
     return defaultValue;
   }
 
-  auto
-  getName () const
-  {
-    return name;
-  }
-};
-
-template <details::number t> class Property<t>
-{
-public:
-  using PropertyType = details::NumberPropertyHelperType<t>;
-
-private:
-  std::string name;
-  typename PropertyType::PropertyType defaultValue;
-
-public:
-  Property (std::string s, typename PropertyType::PropertyType dv)
-      : name{ s }, defaultValue{ dv }
-  {
-  }
-
-  details::PropertyContainer
+  constexpr Details::PropertyContainer
   operator= (typename PropertyType::PropertyType value) const
   {
-    return { name, PropertyType::serialize (value) };
-  }
-  auto
-  getDefaultValue () const
-  {
-    return defaultValue;
+    return { PropertyType::getTypeName (), getName (),
+             PropertyType::serialize (value) };
   }
 
-  auto
-  getName () const
+  constexpr auto
+  operator<=> (const Property p) const
   {
-    return name;
+    return getName () <=> p.getName ();
   }
 };
-
 
 }
 
